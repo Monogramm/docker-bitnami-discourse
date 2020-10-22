@@ -24,7 +24,7 @@ services:
     networks:
       - discourse_internal_network
     volumes_from:
-      - discourse
+      - bitnami-docker-discourse
     volumes:
       - /etc/localtime:/etc/localtime:ro
       - /etc/timezone:/etc/timezone:ro
