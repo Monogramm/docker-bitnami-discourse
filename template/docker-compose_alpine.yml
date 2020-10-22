@@ -55,8 +55,8 @@ services:
       bitnami-docker-discourse-redis:
         condition: service_started
     links:
-      - discourse_db
-      - discourse_redis
+      - bitnami-docker-discourse-db
+      - bitnami-docker-discourse-redis
     volumes:
       - $DISCOURSE_HOME/data/:/bitnami
       #- discourse_data:/bitnami
@@ -144,7 +144,7 @@ services:
     container_name: discourse_db
     restart: always
     healthcheck:
-      test: ["CMD", "pg_isready", "-U", "${BITNAMI_DISCOURSE_DB_USER}"]
+      test: ["CMD", "pg_isready", "-U", "${DISCOURSE_DB_USER}"]
       interval: 60s
       retries: 5
       #start-period: 10s
@@ -153,7 +153,7 @@ services:
     networks:
       - discourse_internal_network
     environment:
-      - POSTGRES_USER=${BITNAMI_DISCOURSE_DB_USER}
+      - POSTGRES_USER=${DISCOURSE_DB_USER}
       - POSTGRES_PASSWORD=${DISCOURSE_DB_PASSWD}
       # If we delegate DB creation to Discourse
       #- POSTGRES_USER=postgres
