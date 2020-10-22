@@ -13,10 +13,10 @@ declare -A base=(
 
 variants=(
 	debian
-	alpine
+	#alpine
 )
 
-min_version='1.0'
+min_version='2.4'
 
 
 # version_greater_or_equal A B returns whether A >= B
@@ -24,12 +24,12 @@ function version_greater_or_equal() {
 	[[ "$(printf '%s\n' "$@" | sort -V | head -n 1)" != "$1" || "$1" == "$2" ]];
 }
 
-dockerRepo="monogramm/docker-__app_slug__"
+dockerRepo="monogramm/docker-bitnami-discourse"
 # Retrieve automatically the latest versions
-#latests=( $( curl -fsSL 'https://api.github.com/repos/__app_owner_slug__/__app_slug__/tags' |tac|tac| \
-#	grep -oE '[[:digit:]]+\.[[:digit:]]+\.[[:digit:]]+' | \
-#	sort -urV ) )
-latests=( 1.0.0 )
+latests=( $( curl -fsSL 'https://api.github.com/repos/bitnami/bitnami-docker-discourse/tags' |tac|tac| \
+	grep -oE '[[:digit:]]+\.[[:digit:]]+\.[[:digit:]]+' | \
+	sort -urV ) )
+#latests=( 2.5.3 )
 
 # Remove existing images
 echo "reset docker images"
@@ -55,7 +55,6 @@ for latest in "${latests[@]}"; do
 
 			template="Dockerfile.${base[$variant]}"
 			cp "template/$template" "$dir/Dockerfile"
-			cp "template/entrypoint.sh" "$dir/entrypoint.sh"
 
 			cp "template/.dockerignore" "$dir/.dockerignore"
 			cp -r "template/hooks" "$dir/"

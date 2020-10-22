@@ -1,4 +1,4 @@
-FROM bitnami/discourse:alpine
+FROM bitnami/discourse:2.5.3
 
 ENV RAILS_ENV="production"
 
@@ -44,7 +44,7 @@ RUN set -ex; \
 # Arguments to label built container
 ARG VCS_REF
 ARG BUILD_DATE
-ARG VERSION=%%VERSION%%
+ARG VERSION=2.5.3
 
 # Keep track of image version
 RUN set -ex; \

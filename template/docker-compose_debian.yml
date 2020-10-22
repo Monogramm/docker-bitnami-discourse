@@ -1,9 +1,14 @@
 version: "2.3"
 
-networks:
-  __app_slug___external_network:
-  __app_slug___internal_network:
+networks:  
+  # Discourse networks
+  discourse_external_network:
+  discourse_internal_network:
     internal: true
+
+#volumes:  
+#  # Discourse volumes
+#  discourse_data:
 
 services:
   # https://docs.docker.com/docker-hub/builds/automated-testing/
@@ -12,19 +17,19 @@ services:
       context: ./test
       dockerfile: Dockerfile
     depends_on:
-      __app_slug__-db:
+      bitnami-docker-discourse-db:
         condition: service_healthy
-      __app_slug__:
+      bitnami-docker-discourse:
         condition: service_started
     networks:
-      - __app_slug___internal_network
+      - discourse_internal_network
     volumes_from:
-      - __app_slug__
+      - discourse
     volumes:
       - /etc/localtime:/etc/localtime:ro
       - /etc/timezone:/etc/timezone:ro
 
-  __app_slug__:
+  bitnami-docker-discourse:
     # For development or CI, tag build from local Dockerfile
     build:
       context: ./
@@ -35,52 +40,159 @@ services:
         - BUILD_DATE=${BUILD_DATE}
     # For production, download prebuilt image
     #image: ${IMAGE_NAME}
-    container_name: __app_slug__
+    hostname: discourse
+    domainname: ${DISCOURSE_BASE_DOMAIN}
+    container_name: discourse
     #restart: always
-    depends_on:
-      __app_slug__-db:
-        condition: service_healthy
-    links:
-      - __app_slug__-db
-    expose:
-      - '80'
     ports:
-      - "80:80"
+      - "3000:3000"
     networks:
-      - __app_slug___internal_network
-      - __app_slug___external_network
+      - discourse_external_network
+      - discourse_internal_network
+    depends_on:
+      bitnami-docker-discourse-db:
+        condition: service_healthy
+      bitnami-docker-discourse-redis:
+        condition: service_started
+    links:
+      - discourse_db
+      - discourse_redis
     volumes:
-      - $__app_uppercase_slug___HOME/html:/var/www/html
+      - $DISCOURSE_HOME/data/:/bitnami
+      #- discourse_data:/bitnami
       - /etc/localtime:/etc/localtime:ro
       - /etc/timezone:/etc/timezone:ro
     environment:
-      - __app_uppercase_slug___DB_TYPE=mysql
-      - __app_uppercase_slug___DB_HOST=$__app_slug__-db
-      - __app_uppercase_slug___DB_NAME=$__app_uppercase_slug___DB_NAME
-      - __app_uppercase_slug___DB_USER=$__app_uppercase_slug___DB_USER
-      - __app_uppercase_slug___DB_PASSWORD=$__app_uppercase_slug___DB_PASSWD
+      # Site Config
+      - DISCOURSE_SITENAME=Discourse
+      - DISCOURSE_HOST=discourse.${DISCOURSE_BASE_DOMAIN}
+      - DISCOURSE_HOSTNAME=discourse.${DISCOURSE_BASE_DOMAIN}
+      - DISCOURSE_EXTERNAL_PORT_NUMBER=80
+      - DISCOURSE_USERNAME=${DISCOURSE_ADMIN_LOGIN}
+      - DISCOURSE_PASSWORD=${DISCOURSE_ADMIN_PASSWD}
+      - DISCOURSE_EMAIL=discourse@${DISCOURSE_BASE_DOMAIN}
+      # DB Config
+      - POSTGRESQL_HOST=discourse_db
+      - POSTGRESQL_PORT_NUMBER=5432
+      - POSTGRESQL_ROOT_USER=${DISCOURSE_DB_USER}
+      - POSTGRESQL_ROOT_PASSWORD=${DISCOURSE_DB_PASSWD}
+      # If we delegate DB creation to Discourse
+      #- POSTGRESQL_ROOT_USER=postgres
+      #- POSTGRESQL_ROOT_PASSWORD=${DISCOURSE_DB_ROOT_PWD}
+      - POSTGRESQL_CLIENT_CREATE_DATABASE_NAME=${DISCOURSE_DB_NAME}
+      - POSTGRESQL_CLIENT_CREATE_DATABASE_USERNAME=${DISCOURSE_DB_USER}
+      - POSTGRESQL_CLIENT_CREATE_DATABASE_PASSWORD=${DISCOURSE_DB_PASSWD}
+      - DISCOURSE_POSTGRESQL_NAME=${DISCOURSE_DB_USER}
+      - DISCOURSE_POSTGRESQL_USERNAME=${DISCOURSE_DB_USER}
+      - DISCOURSE_POSTGRESQL_PASSWORD=${DISCOURSE_DB_PASSWD}
+      # Redis Config
+      - REDIS_HOST=discourse_redis
+      - REDIS_PORT_NUMBER=6379
+      #- REDIS_PASSWORD=${DISCOURSE_REDIS_PASSWD}
+      # SMTP Config
+      - SMTP_AUTH=plain
+      - SMTP_HOST=bitnami-docker-discourse-mailer
+      - SMTP_PORT=1025
+      - SMTP_USER=
+      - SMTP_PASSWORD=
+      - SMTP_TLS=no
 
-  __app_slug__-db:
-    image: mariadb:latest
-    container_name: __app_slug__-db
-    restart: always
-    command: --character_set_client=utf8 --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci --character-set-client-handshake=FALSE
-    healthcheck:
-      test: ["CMD", "mysqladmin" ,"ping", "-h", "localhost", "--password=${$__app_uppercase_slug___DB_ROOT_PASSWD}"]
-      timeout: 10s
-      retries: 5
-    expose:
-      - '3306'
-    #ports:
-    #  - "3306:3306"
+  bitnami-docker-discourse-sidekiq:
+    image: bitnami/discourse:2
+    container_name: discourse_sidekiq
+    #restart: always
+    command: 'nami start --foreground discourse-sidekiq'
+    depends_on:
+      bitnami-docker-discourse:
+        condition: service_started
     networks:
-      - __app_slug___internal_network
+      - discourse_external_network
+      - discourse_internal_network
     volumes:
-      - $__app_uppercase_slug___HOME/db:/var/lib/mysql
+      - $DISCOURSE_HOME/data/:/bitnami
+      #- discourse_data:/bitnami
       - /etc/localtime:/etc/localtime:ro
       - /etc/timezone:/etc/timezone:ro
     environment:
-      - MYSQL_ROOT_PASSWORD=$__app_uppercase_slug___DB_ROOT_PASSWD
-      - MYSQL_DATABASE=$__app_uppercase_slug___DB_NAME
-      - MYSQL_USER=$__app_uppercase_slug___DB_USER
-      - MYSQL_PASSWORD=$__app_uppercase_slug___DB_PASSWD
+      # Site Config
+      - DISCOURSE_HOST=discourse
+      - DISCOURSE_HOSTNAME=discourse.${DISCOURSE_BASE_DOMAIN}
+      - DISCOURSE_PORT=3000
+      - DISCOURSE_USERNAME=${DISCOURSE_ADMIN_LOGIN}
+      - DISCOURSE_PASSWORD=${DISCOURSE_ADMIN_PASSWD}
+      - DISCOURSE_EMAIL=discourse@${DISCOURSE_BASE_DOMAIN}
+      # DB Config
+      - POSTGRESQL_HOST=discourse_db
+      - POSTGRESQL_PORT_NUMBER=5432
+      - DISCOURSE_POSTGRESQL_NAME=${DISCOURSE_DB_NAME}
+      - DISCOURSE_POSTGRESQL_USERNAME=${DISCOURSE_DB_USER}
+      - DISCOURSE_POSTGRESQL_PASSWORD=${DISCOURSE_DB_PASSWD}
+      # Redis Config
+      - REDIS_HOST=discourse_redis
+      - REDIS_PORT_NUMBER=6379
+      #- REDIS_PASSWORD=${DISCOURSE_REDIS_PASSWD}
+      # SMTP Config
+      - SMTP_AUTH=plain
+      - SMTP_HOST=bitnami-docker-discourse-mailer
+      - SMTP_PORT=1025
+      - SMTP_USER=
+      - SMTP_PASSWORD=
+      - SMTP_TLS=no
+
+  bitnami-docker-discourse-db:
+    image: postgres:11-alpine
+    container_name: discourse_db
+    restart: always
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "${BITNAMI_DISCOURSE_DB_USER}"]
+      interval: 60s
+      retries: 5
+      #start-period: 10s
+    expose:
+      - '5432'
+    networks:
+      - discourse_internal_network
+    environment:
+      - POSTGRES_USER=${BITNAMI_DISCOURSE_DB_USER}
+      - POSTGRES_PASSWORD=${DISCOURSE_DB_PASSWD}
+      # If we delegate DB creation to Discourse
+      #- POSTGRES_USER=postgres
+      #- POSTGRES_PASSWORD=${DISCOURSE_DB_ROOT_PASSWD}
+    volumes:
+      - $DISCOURSE_HOME/postgresql/:/var/lib/postgresql/data
+      - /etc/localtime:/etc/localtime:ro
+      - /etc/timezone:/etc/timezone:ro
+
+  bitnami-docker-discourse-redis:
+    image: redis:5.0-alpine
+    container_name: discourse_redis
+    restart: always
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+    expose:
+      - '6379'
+    networks:
+      - discourse_internal_network
+    environment:
+      #- REDIS_PASSWORD=${DISCOURSE_REDIS_PASSWD}
+      - ALLOW_EMPTY_PASSWORD=yes
+    volumes:
+      - $DISCOURSE_HOME/redis/:/data
+      - /etc/localtime:/etc/localtime:ro
+      - /etc/timezone:/etc/timezone:ro
+
+  bitnami-docker-discourse-mailer:
+    image: sj26/mailcatcher:latest
+    hostname: ${DISCOURSE_BASE_DOMAIN}
+    container_name: discourse_mailer
+    restart: always
+    expose:
+      - 1025
+    ports:
+      - 1080:1080
+    networks:
+      - discourse_external_network
+      - discourse_internal_network
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - /etc/timezone:/etc/timezone:ro
