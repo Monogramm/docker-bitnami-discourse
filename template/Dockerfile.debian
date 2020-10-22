@@ -5,36 +5,36 @@ ENV RAILS_ENV="production"
 
 # Add requirements and install application
 RUN set -ex; \
-    bundle exec rake plugin:install 'https://github.com/jonmbake/discourse-ldap-auth'; \
-    bundle exec rake plugin:install 'https://github.com/discourse/discourse-adplugin'; \
-    bundle exec rake plugin:install 'https://github.com/discourse/discourse-affiliate'; \
-    bundle exec rake plugin:install 'https://github.com/discourse/discourse-akismet'; \
-    bundle exec rake plugin:install 'https://github.com/discourse/discourse-auto-deactivate'; \
-    bundle exec rake plugin:install 'https://github.com/discourse/discourse-bbcode'; \
-    bundle exec rake plugin:install 'https://github.com/discourse/discourse-bbcode-color'; \
-    bundle exec rake plugin:install 'https://github.com/discourse/discourse-cakeday'; \
-    bundle exec rake plugin:install 'https://github.com/discourse/discourse-canned-replies'; \
-    bundle exec rake plugin:install 'https://github.com/discourse/discourse-characters-required'; \
-    bundle exec rake plugin:install 'https://github.com/discourse/discourse-chat-integration'; \
-    bundle exec rake plugin:install 'https://github.com/discourse/discourse-checklist'; \
-    bundle exec rake plugin:install 'https://github.com/discourse/discourse-data-explorer'; \
-    bundle exec rake plugin:install 'https://github.com/discourse/discourse-fingerprint'; \
-    bundle exec rake plugin:install 'https://github.com/discourse/discourse-footnote'; \
-    bundle exec rake plugin:install 'https://github.com/discourse/discourse-graphviz'; \
-    bundle exec rake plugin:install 'https://github.com/discourse/discourse-math'; \
-    bundle exec rake plugin:install 'https://github.com/discourse/discourse-matomo-analytics'; \
-    bundle exec rake plugin:install 'https://github.com/discourse/discourse-oauth2-basic'; \
-    bundle exec rake plugin:install 'https://github.com/discourse/discourse-patreon'; \
-    bundle exec rake plugin:install 'https://github.com/discourse/discourse-plugin-linkedin-auth'; \
-    bundle exec rake plugin:install 'https://github.com/discourse/discourse-push-notifications'; \
-    bundle exec rake plugin:install 'https://github.com/discourse/discourse-saved-searches'; \
-    bundle exec rake plugin:install 'https://github.com/discourse/discourse-signatures'; \
-    bundle exec rake plugin:install 'https://github.com/discourse/discourse-sitemap'; \
-    bundle exec rake plugin:install 'https://github.com/discourse/discourse-staff-notes'; \
-    bundle exec rake plugin:install 'https://github.com/discourse/discourse-styleguide'; \
-    bundle exec rake plugin:install 'https://github.com/discourse/discourse-tooltips'; \
-    bundle exec rake plugin:install 'https://github.com/discourse/discourse-user-card-badges'; \
-    bundle exec rake plugin:install 'https://github.com/discourse/discourse-voting'; \
+    bundle exec rake plugin:install[https://github.com/jonmbake/discourse-ldap-auth]; \
+    bundle exec rake plugin:install[https://github.com/discourse/discourse-adplugin]; \
+    bundle exec rake plugin:install[https://github.com/discourse/discourse-affiliate]; \
+    bundle exec rake plugin:install[https://github.com/discourse/discourse-akismet]; \
+    bundle exec rake plugin:install[https://github.com/discourse/discourse-auto-deactivate]; \
+    bundle exec rake plugin:install[https://github.com/discourse/discourse-bbcode]; \
+    bundle exec rake plugin:install[https://github.com/discourse/discourse-bbcode-color]; \
+    bundle exec rake plugin:install[https://github.com/discourse/discourse-cakeday]; \
+    bundle exec rake plugin:install[https://github.com/discourse/discourse-canned-replies]; \
+    bundle exec rake plugin:install[https://github.com/discourse/discourse-characters-required]; \
+    bundle exec rake plugin:install[https://github.com/discourse/discourse-chat-integration]; \
+    bundle exec rake plugin:install[https://github.com/discourse/discourse-checklist]; \
+    bundle exec rake plugin:install[https://github.com/discourse/discourse-data-explorer]; \
+    bundle exec rake plugin:install[https://github.com/discourse/discourse-fingerprint]; \
+    bundle exec rake plugin:install[https://github.com/discourse/discourse-footnote]; \
+    bundle exec rake plugin:install[https://github.com/discourse/discourse-graphviz]; \
+    bundle exec rake plugin:install[https://github.com/discourse/discourse-math]; \
+    bundle exec rake plugin:install[https://github.com/discourse/discourse-matomo-analytics]; \
+    bundle exec rake plugin:install[https://github.com/discourse/discourse-oauth2-basic]; \
+    bundle exec rake plugin:install[https://github.com/discourse/discourse-patreon]; \
+    bundle exec rake plugin:install[https://github.com/discourse/discourse-plugin-linkedin-auth]; \
+    bundle exec rake plugin:install[https://github.com/discourse/discourse-push-notifications]; \
+    bundle exec rake plugin:install[https://github.com/discourse/discourse-saved-searches]; \
+    bundle exec rake plugin:install[https://github.com/discourse/discourse-signatures]; \
+    bundle exec rake plugin:install[https://github.com/discourse/discourse-sitemap]; \
+    bundle exec rake plugin:install[https://github.com/discourse/discourse-staff-notes]; \
+    bundle exec rake plugin:install[https://github.com/discourse/discourse-styleguide]; \
+    bundle exec rake plugin:install[https://github.com/discourse/discourse-tooltips]; \
+    bundle exec rake plugin:install[https://github.com/discourse/discourse-user-card-badges]; \
+    bundle exec rake plugin:install[https://github.com/discourse/discourse-voting]; \
     bundle exec rake assets:precompile
 
 # TODO Add https://github.com/discourse/discourse-assign
