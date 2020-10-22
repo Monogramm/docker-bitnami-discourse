@@ -1,5 +1,6 @@
 FROM bitnami/discourse:2.5.3
 
+WORKDIR /opt/bitnami/discourse
 ENV RAILS_ENV="production"
 
 # Add requirements and install application
