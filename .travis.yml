@@ -35,7 +35,7 @@ script:
   # Test containers can be dropped and restarted
   - docker-compose -f docker-compose.test.yml down
   - travis_retry docker-compose -f docker-compose.test.yml up -d
-  - docker-compose -f docker-compose.test.yml logs "sut"
+  - docker-compose -f docker-compose.test.yml logs -f "sut"
   - docker-compose -f docker-compose.test.yml ps
   - docker-compose -f docker-compose.test.yml logs "bitnami-docker-discourse-db"
   - docker-compose -f docker-compose.test.yml ps "bitnami-docker-discourse-db" | grep "Up"
