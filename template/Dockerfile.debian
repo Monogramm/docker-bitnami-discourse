@@ -31,7 +31,6 @@ RUN set -ex; \
     bundle exec rake plugin:install[https://github.com/discourse/discourse-signatures]; \
     bundle exec rake plugin:install[https://github.com/discourse/discourse-sitemap]; \
     bundle exec rake plugin:install[https://github.com/discourse/discourse-staff-notes]; \
-    bundle exec rake plugin:install[https://github.com/discourse/discourse-styleguide]; \
     bundle exec rake plugin:install[https://github.com/discourse/discourse-tooltips]; \
     bundle exec rake plugin:install[https://github.com/discourse/discourse-user-card-badges]; \
     bundle exec rake plugin:install[https://github.com/discourse/discourse-voting]
@@ -40,7 +39,7 @@ RUN set -ex; \
 # TODO Add https://github.com/discourse/discourse-code-review
 # TODO Add https://github.com/discourse/discourse-saml
 # TODO Add https://github.com/discourse/discourse-solved
-# FIXME https://meta.discourse.org/t/assets-precompile-require-redis/168008
+# FIXME Add https://github.com/discourse/discourse-styleguide when https://meta.discourse.org/t/discourse-styleguide-plugin-fails/168027
 
 # Arguments to label built container
 ARG VCS_REF
